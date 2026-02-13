@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GD Macros</title>
+  <style>
+    body { background:#111; color:white; font-family:sans-serif; text-align:center; padding:40px; }
+    a { color:#00ffcc; text-decoration:none; }
+    .macro { background:#222; padding:10px; margin:10px auto; width:300px; border-radius:5px; }
+  </style>
+</head>
+<body>
+  <h1>Geometry Dash Macros</h1>
+  <div id="macroList"></div>
+
+  <script>
+    fetch('/macros.json')
+      .then(res => res.json())
+      .then(macros => {
+        const list = document.getElementById('macroList');
+        macros.forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'macro';
+          div.innerHTML = `<p>${m.name}</p><a href="${m.url}" download>Download</a>`;
+          list.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>
