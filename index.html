@@ -12,26 +12,30 @@
       background: #000;
       display: flex;
       justify-content: center;
-      align-items: center;
+      padding: 40px 20px;
       color: #fff;
+      overflow-y: auto;
     }
 
     .container {
       background: #1a1a1a;
       border-radius: 20px;
-      padding: 40px 30px;
-      max-width: 500px;
+      padding: 30px;
       width: 100%;
-      max-height: 80vh; /* fixed max height */
-      overflow-y: auto;  /* allow scrolling if content exceeds */
+      max-width: 500px;
+      max-height: 80vh; 
+      overflow-y: auto; 
       box-shadow: 0 10px 30px rgba(255,255,255,0.1);
       text-align: center;
     }
 
-    h1 {
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
+    /* Dark grey scrollbar */
+    .container::-webkit-scrollbar { width: 10px; }
+    .container::-webkit-scrollbar-track { background: #333; border-radius: 10px; }
+    .container::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+    .container::-webkit-scrollbar-thumb:hover { background: #777; }
+
+    h1 { margin-bottom: 20px; font-weight: 600; }
 
     #searchInput {
       width: 80%;
@@ -40,7 +44,7 @@
       border-radius: 12px;
       border: none;
       font-size: 1rem;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       background: #333;
       color: #fff;
       text-align: center;
@@ -48,14 +52,10 @@
 
     #searchInput:focus {
       outline: none;
-      border: 2px solid #4f46e5;
+      border: 2px solid #555;
     }
 
-    .level-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+    .level-list { list-style: none; padding: 0; margin: 0; }
 
     .level-item {
       display: flex;
@@ -73,14 +73,9 @@
       background: #333;
     }
 
-    .level-name {
-      font-weight: 600;
-    }
+    .level-name { font-weight: 600; }
 
-    .buttons {
-      display: flex;
-      gap: 8px;
-    }
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .buttons button {
       padding: 6px 12px;
@@ -89,11 +84,12 @@
       cursor: pointer;
       font-weight: 600;
       color: #fff;
-      background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+      background: #555;
       transition: all 0.3s ease;
     }
 
     .buttons button:hover {
+      background: #777;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
@@ -109,21 +105,30 @@
     <h1>Level Macro Downloader</h1>
     <input type="text" id="searchInput" placeholder="Search levels...">
 
-    <ul id="levelList" class="level-list">
-      <!-- Levels dynamically added -->
-    </ul>
+    <ul id="levelList" class="level-list"></ul>
   </div>
 
   <script>
-    const levels = ["ORBIT", "Aeternus", "Silent Clubstep", "Tunnel of Despair", "doradura", "Abyss of Darkness", "Slaughterhouse", "Sakupen Circles"];
+    // Define which macros each level has
+    const levelMacros = {
+      "ORBIT": [".gdr", ".slc"],
+      "Aeternus": [".gdr", ".slc", ".ybot", ".tcm"],
+      "Abyss of Darkness": [".gdr", ".slc", ".ybot", ".tcm"],
+      "doradura": [".gdr", ".slc", ".ybot", ".tcm"],
+      "Sakupen Circles": [".gdr", ".slc", ".ybot", ".tcm"],
+      "Silent Clubstep": [".gdr", ".slc", ".ybot", ".tcm"],
+      "Slaughterhouse": [".gdr", ".slc", ".ybot", ".tcm"],
+      "Tunnel of Despair": [".gdr", ".slc", ".ybot", ".tcm"]
+    };
+
     const levelList = document.getElementById('levelList');
     const searchInput = document.getElementById('searchInput');
 
     function renderLevels(filter="") {
       levelList.innerHTML = "";
-      const filtered = levels.filter(level => level.toLowerCase().includes(filter.toLowerCase()));
+      const filteredLevels = Object.keys(levelMacros).filter(level => level.toLowerCase().includes(filter.toLowerCase()));
 
-      filtered.forEach(level => {
+      filteredLevels.forEach(level => {
         const li = document.createElement('li');
         li.className = "level-item";
 
@@ -134,23 +139,20 @@
         const btnContainer = document.createElement('div');
         btnContainer.className = "buttons";
 
-        const gdrBtn = document.createElement('button');
-        gdrBtn.textContent = ".gdr";
-        gdrBtn.addEventListener('click', () => forceDownload(`macros/${level}/${level}.gdr`, `${level}.gdr`));
-
-        const slcBtn = document.createElement('button');
-        slcBtn.textContent = ".slc";
-        slcBtn.addEventListener('click', () => forceDownload(`macros/${level}/${level}.slc`, `${level}.slc`));
-
-        btnContainer.appendChild(gdrBtn);
-        btnContainer.appendChild(slcBtn);
+        // Loop over all available macros for this level
+        levelMacros[level].forEach(ext => {
+          const btn = document.createElement('button');
+          btn.textContent = ext;
+          btn.addEventListener('click', () => forceDownload(`macros/${level}/${level}${ext}`, `${level}${ext}`));
+          btnContainer.appendChild(btn);
+        });
 
         li.appendChild(span);
         li.appendChild(btnContainer);
         levelList.appendChild(li);
       });
 
-      if(filtered.length === 0){
+      if(filteredLevels.length === 0){
         const li = document.createElement('li');
         li.textContent = "No levels found";
         li.style.textAlign = "center";
@@ -159,7 +161,7 @@
       }
     }
 
-    searchInput.addEventListener('input', (e) => renderLevels(e.target.value));
+    searchInput.addEventListener('input', e => renderLevels(e.target.value));
 
     async function forceDownload(url, filename){
       try {
