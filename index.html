@@ -24,27 +24,32 @@
   <button id="downloadSLC">Download .slc</button>
 
   <script>
-    function downloadFile(url, filename) {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    async function forceDownload(url, filename) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('File not found');
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (err) {
+        alert('Error downloading file: ' + err.message);
+      }
     }
 
     document.getElementById('downloadGDR').addEventListener('click', () => {
       const level = document.getElementById('levelSelect').value;
       if (!level) return alert('Please select a level');
-      const path = `/macros/${level}/${level}.gdr`;
-      downloadFile(path, `${level}.gdr`);
+      forceDownload(`/macros/${level}/${level}.gdr`, `${level}.gdr`);
     });
 
     document.getElementById('downloadSLC').addEventListener('click', () => {
       const level = document.getElementById('levelSelect').value;
       if (!level) return alert('Please select a level');
-      const path = `/macros/${level}/${level}.slc`;
-      downloadFile(path, `${level}.slc`);
+      forceDownload(`/macros/${level}/${level}.slc`, `${level}.slc`);
     });
   </script>
 </body>
