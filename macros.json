@@ -1,0 +1,4 @@
+[
+  { "name": "MegaJump.macro", "url": "https://your-r2-bucket-url/MegaJump.macro" },
+  { "name": "SpeedRun.json", "url": "https://your-r2-bucket-url/SpeedRun.json" }
+]
