@@ -43,13 +43,13 @@
     document.getElementById('downloadGDR').addEventListener('click', () => {
       const level = document.getElementById('levelSelect').value;
       if (!level) return alert('Please select a level');
-      forceDownload(`/macros/${level}/${level}.gdr`, `${level}.gdr`);
+      forceDownload(`macros/${level}/${level}.gdr`, `${level}.gdr`);
     });
 
     document.getElementById('downloadSLC').addEventListener('click', () => {
       const level = document.getElementById('levelSelect').value;
       if (!level) return alert('Please select a level');
-      forceDownload(`/macros/${level}/${level}.slc`, `${level}.slc`);
+      forceDownload(`macros/${level}/${level}.slc`, `${level}.slc`);
     });
   </script>
 </body>
